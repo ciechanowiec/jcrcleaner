@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.18">
+<meta name="author" content="Herman Ciechanowiec">
+<title>JCR Cleaner</title>
+<link rel="stylesheet" href="https://www.ciechanowiec.eu/linux_mantra/adoc-css-style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<!-- Foldable TOC -->
+<style>
+    #tocbot a.toc-link.node-name--H1{ font-style: italic }
+    @media screen{
+      #tocbot > ul.toc-list{ margin-bottom: 0.5em; margin-left: 0.125em }
+      #tocbot ul.sectlevel0, #tocbot a.toc-link.node-name--H1 + ul{
+        padding-left: 0 }
+      #tocbot a.toc-link{ height:100% }
+      .is-collapsible{ max-height:3000px; overflow:hidden; }
+      .is-collapsed{ max-height:0 }
+      .is-active-link{ font-weight:700 }
+    }
+    @media print{
+      #tocbot a.toc-link.node-name--H4{ display:none }
+    }
+</style>
+</head>
+<body class="article toc2 toc-left text-justify">
+<div id="header">
+<h1>JCR Cleaner</h1>
+<div class="details">
+<span id="author" class="author">Herman Ciechanowiec</span><br>
+<span id="email" class="email"><a href="mailto:herman@ciechanowiec.eu">herman@ciechanowiec.eu</a></span><br>
+</div>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_overview">1. Overview</a></li>
+<li><a href="#_plugin_purpose">2. Plugin Purpose</a>
+<ul class="sectlevel2">
+<li><a href="#_the_problem_of_redundant_properties">2.1. The Problem of Redundant Properties</a></li>
+<li><a href="#_removing_redundant_properties_by_jcr_cleaner">2.2. Removing Redundant Properties by JCR Cleaner</a>
+<ul class="sectlevel3">
+<li><a href="#_example_with_default_properties">2.2.1. Example with Default Properties</a></li>
+<li><a href="#_example_with_custom_properties">2.2.2. Example with Custom Properties</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_usage">3. Usage</a>
+<ul class="sectlevel2">
+<li><a href="#_pom_xml">3.1. <code>pom.xml</code></a></li>
+<li><a href="#_configuration">3.2. Configuration</a></li>
+<li><a href="#_execution">3.3. Execution</a></li>
+</ul>
+</li>
+<li><a href="#_license">4. License</a></li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="_overview"><a class="anchor" href="#_overview"></a>1. Overview</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><em>JCR Cleaner</em> is a Maven plugin that cleans Adobe Experience Manager (AEM) projects by removing redundant runtime generated properties of Java Content Repository (JCR) nodes, such as <code>cq:lastReplicated</code>, <code>jcr:lastModified</code> and <code>jcr:created</code> (by default, 12 types of properties are removed). The plugin aims to be a part of a standard toolkit of every AEM project in order to improve code readability, as well as reduce the amount of unnecessary and environment specific data stored in the codebase.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_plugin_purpose"><a class="anchor" href="#_plugin_purpose"></a>2. Plugin Purpose</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_the_problem_of_redundant_properties"><a class="anchor" href="#_the_problem_of_redundant_properties"></a>2.1. The Problem of Redundant Properties</h3>
+<div class="paragraph">
+<p>Code repositories for AEM projects contain a substantial number of files in <a href="https://jackrabbit.apache.org/filevault/docview.html">FileVault Document View (DocView) format</a>, named <code>.content.xml</code> (DocView files). In a typical AEM project there can be several thousand of such files.</p>
+</div>
+<div class="paragraph">
+<p>DocView files represent serialized JCR nodes and their properties. In many cases those files aren&#8217;t created externally, but are transferred into a code repository directly from JCR. However, JCR nodes, besides their normal properties, often have runtime generated properties, such as <code>jcr:lastModifiedBy</code> or <code>cq:lastReplicatedBy</code>. In such cases transfer of DocView files into a code repository directly from JCR results in putting to the code repository DocView files with both normal and runtime generated properties of JCR nodes.</p>
+</div>
+<div class="paragraph">
+<p>Storing runtime generated properties of JCR nodes in a code repository in DocView files is a bad practice at least due to the following reasons:</p>
+</div>
+<div class="olist upperalpha">
+<ol class="upperalpha" type="A">
+<li>
+<p><strong>Reduced Code Readability</strong></p>
+<div class="paragraph">
+<p>The inclusion of runtime generated properties of JCR nodes into DocView files in a code repository can notably reduce the readability of a code repository. When a repository is saturated with machine-generated data, discerning the important code and configuration details becomes challenging. This obscurity complicates version control, code reviews, debugging, and overall understanding of the codebase. A secondary but still notable aspect of this issue is the impairment of static code analysis. Warnings or alerts generated by these tools due to runtime generated properties create unnecessary noise, making it harder to spot real code-related issues.</p>
+</div>
+</li>
+<li>
+<p><strong>Environment Specific Data</strong></p>
+<div class="paragraph">
+<p>Runtime generated properties of JCR nodes are often specific to the environment from which they were retrieved. Storing these properties in a code repository can lead to the inclusion of environment-specific data in the codebase. This can cause problems when moving the code to a different environment, such as staging or production.</p>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_removing_redundant_properties_by_jcr_cleaner"><a class="anchor" href="#_removing_redundant_properties_by_jcr_cleaner"></a>2.2. Removing Redundant Properties by JCR Cleaner</h3>
+<div class="paragraph">
+<p>The presence of runtime generated properties of JCR nodes in a code repository in DocView files and consequences of that problem are resolved by <em>JCR Cleaner</em>. It achieves this by removing those properties from the relevant files. By default, the properties that have the following names are removed:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>cq:lastReplicated</code></p>
+</li>
+<li>
+<p><code>cq:lastReplicatedBy</code></p>
+</li>
+<li>
+<p><code>cq:lastReplicationAction</code></p>
+</li>
+<li>
+<p><code>cq:lastModified</code></p>
+</li>
+<li>
+<p><code>cq:lastModifiedBy</code></p>
+</li>
+<li>
+<p><code>cq:lastPublished</code></p>
+</li>
+<li>
+<p><code>cq:lastPublishedBy</code></p>
+</li>
+<li>
+<p><code>jcr:lastModified</code></p>
+</li>
+<li>
+<p><code>jcr:lastModifiedBy</code></p>
+</li>
+<li>
+<p><code>jcr:created</code></p>
+</li>
+<li>
+<p><code>jcr:createdBy</code></p>
+</li>
+<li>
+<p><code>jcr:isCheckedOut</code></p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_example_with_default_properties"><a class="anchor" href="#_example_with_default_properties"></a>2.2.1. Example with Default Properties</h4>
+<div class="paragraph">
+<p><strong><em>Before</em></strong></p>
+</div>
+<div class="paragraph">
+<p>Here is an example of a DocView file that has 19 redundant runtime generated properties. Note that those properties don&#8217;t have a pattern where they are located (no rule <em>one line - one property</em>) and are scattered irregularly:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+          xmlns:cq="http://www.day.com/jcr/cq/1.0"
+          jcr:primaryType="nt:unstructured"
+          jcr:title="Properties"
+          cq:lastReplicated="{Date}2023-03-15T11:00:00.000Z"
+          cq:lastReplicatedBy="admin"
+          cq:lastReplicationAction="Activate"
+          cq:lastModified="{Date}2023-03-13T09:30:00.000+01:00"
+          cq:lastModifiedBy="admin"
+          cq:lastPublished="{Date}2023-03-15T11:00:00.000Z"
+          cq:lastPublishedBy="admin"
+          jcr:lastModified="Thu Jun 17 2021 12:55:05 GMT+0000"
+          jcr:lastModifiedBy="admin"
+          jcr:created="Thu Jun 17 2021 19:55:05 GMT+0000"
+          jcr:createdBy="admin"
+          jcr:isCheckedOut="{Boolean}true"
+          sling:resourceType="cq/gui/components/authoring/dialog"&gt;
+    &lt;content
+            jcr:primaryType="nt:unstructured" cq:lastReplicated="{Date}2023-03-15T11:00:00.000Z"
+            sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns"&gt;
+        &lt;items jcr:primaryType="nt:unstructured" cq:lastReplicated="{Date}2023-03-15T11:00:00.000Z"&gt;
+            &lt;column cq:lastReplicated="{Date}2023-03-15T11:00:00.000Z" jcr:createdBy="admin"
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/coral/foundation/container" jcr:created="Thu Jun 17 2021 19:55:05 GMT+0000"&gt;
+                &lt;items jcr:primaryType="nt:unstructured"&gt;
+                    &lt;textUno
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                            fieldLabel="Text Uno"
+                            name="./textUno"
+                            cq:lastModified="{Date}2023-03-13T09:30:00.000+01:00"/&gt;
+                    &lt;textDuo
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                            fieldLabel="Text Duo"
+                            name="./textDuo" cq:lastModified="{Date}2023-03-13T09:30:00.000+01:00"/&gt;
+                &lt;/items&gt;
+            &lt;/column&gt;
+        &lt;/items&gt;
+    &lt;/content&gt;
+&lt;/jcr:root&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong><em>After</em></strong></p>
+</div>
+<div class="paragraph">
+<p>Following the cleanup by <em>JCR Cleaner</em>, all the redundant runtime generated properties from the above file will be removed. Besides that, the content of the file wil be prettified in places where the removed properties were located so that the final result will look the following way:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+          xmlns:cq="http://www.day.com/jcr/cq/1.0"
+          jcr:primaryType="nt:unstructured"
+          jcr:title="Properties"
+          sling:resourceType="cq/gui/components/authoring/dialog"&gt;
+    &lt;content
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns"&gt;
+        &lt;items jcr:primaryType="nt:unstructured"&gt;
+            &lt;column
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/coral/foundation/container"&gt;
+                &lt;items jcr:primaryType="nt:unstructured"&gt;
+                    &lt;textUno
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                            fieldLabel="Text Uno"
+                            name="./textUno"/&gt;
+                    &lt;textDuo
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                            fieldLabel="Text Duo"
+                            name="./textDuo"/&gt;
+                &lt;/items&gt;
+            &lt;/column&gt;
+        &lt;/items&gt;
+    &lt;/content&gt;
+&lt;/jcr:root&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_example_with_custom_properties"><a class="anchor" href="#_example_with_custom_properties"></a>2.2.2. Example with Custom Properties</h4>
+<div class="paragraph">
+<p>It was explained above that <em>JCR Cleaner</em> has a set of default names of redundant runtime generated properties that are removed by default. However - as it will be elaborated in the next section - that default set can be customized. For instance, the file below contains 2 redundant runtime generated properties: <code>jcr:createdBy</code> and <code>jcr:isCheckedOut</code>. Nevertheless, if <em>JCR Cleaner</em> is configured in such way that only <code>jcr:createdBy</code> property should be removed, it will be the only deleted property in this file:</p>
+</div>
+<div class="listingblock">
+<div class="title">Before:</div>
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+          jcr:primaryType="nt:unstructured"
+          jcr:title="Properties"
+          jcr:createdBy="admin" <i class="conum" data-value="1"></i><b>(1)</b>
+          jcr:isCheckedOut="{Boolean}true" <i class="conum" data-value="2"></i><b>(2)</b>
+          sling:resourceType="cq/gui/components/authoring/dialog"/&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">After:</div>
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+          jcr:primaryType="nt:unstructured"
+          jcr:title="Properties"
+          jcr:isCheckedOut="{Boolean}true" <i class="conum" data-value="2"></i><b>(2)</b>
+          sling:resourceType="cq/gui/components/authoring/dialog"/&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>jcr:createdBy</code> - will be removed</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><code>jcr:isCheckedOut</code> - will be kept</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_usage"><a class="anchor" href="#_usage"></a>3. Usage</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_pom_xml"><a class="anchor" href="#_pom_xml"></a>3.1. <code>pom.xml</code></h3>
+<div class="paragraph">
+<p>To use <em>JCR Cleaner</em>, add it to the <code>plugins</code> section of a relevant <code>pom.xml</code> file in an AEM project. Typically, it should be a parent <code>pom.xml</code> file located in the repository root.</p>
+</div>
+<div class="paragraph">
+<p><em>JCR Cleaner</em> has a single predefined goal: <code>clean-jcr</code>. This goal should be specified in the plugin declaration:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;plugins&gt;
+  ...
+  &lt;plugin&gt;
+    &lt;groupId&gt;eu.ciechanowiec&lt;/groupId&gt;
+    &lt;artifactId&gt;jcrcleaner-maven-plugin&lt;/artifactId&gt;
+    &lt;version&gt;1.0.0&lt;/version&gt;
+    &lt;executions&gt;
+      &lt;execution&gt;
+        &lt;goals&gt;
+          &lt;goal&gt;clean-jcr&lt;/goal&gt;
+        &lt;/goals&gt;
+      &lt;/execution&gt;
+    &lt;/executions&gt;
+  &lt;/plugin&gt;
+  ...
+&lt;plugins&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_configuration"><a class="anchor" href="#_configuration"></a>3.2. Configuration</h3>
+<div class="paragraph">
+<p><em>JCR Cleaner</em> includes a default configuration that will suffice for the vast majority of AEM projects. However, this configuration can be customized as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;plugins&gt;
+  ...
+  &lt;plugin&gt;
+    &lt;groupId&gt;eu.ciechanowiec&lt;/groupId&gt;
+    &lt;artifactId&gt;jcrcleaner-maven-plugin&lt;/artifactId&gt;
+    &lt;version&gt;1.0.0&lt;/version&gt;
+    &lt;executions&gt;
+      &lt;execution&gt;
+        &lt;goals&gt;
+          &lt;goal&gt;clean-jcr&lt;/goal&gt;
+        &lt;/goals&gt;
+      &lt;/execution&gt;
+    &lt;/executions&gt;
+    &lt;configuration&gt;
+      &lt;isEnabled&gt;false&lt;/isEnabled&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+      &lt;fileNameRegex&gt;new-.+&lt;/fileNameRegex&gt; <i class="conum" data-value="2"></i><b>(2)</b>
+      &lt;excludedAbsPathRegex&gt;.*site-archive.*&lt;/excludedAbsPathRegex&gt; <i class="conum" data-value="3"></i><b>(3)</b>
+      &lt;namesOfPropertiesToRemove&gt; <i class="conum" data-value="4"></i><b>(4)</b>
+        &lt;namesOfPropertyToRemove&gt;jcr:created&lt;/namesOfPropertyToRemove&gt;
+        &lt;namesOfPropertyToRemove&gt;jcr:createdBy&lt;/namesOfPropertyToRemove&gt;
+      &lt;/namesOfPropertiesToRemove&gt;
+    &lt;/configuration&gt;
+  &lt;/plugin&gt;
+  ...
+&lt;plugins&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>isEnabled</code> - <code>true</code> if the plugin should be enabled and perform cleaning when executed; <code>false</code> otherwise. By default, this value is <code>true</code>, which means that by default the plugin is enabled.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><code>fileNameRegex</code> - Regex for file names. Only content of files whose names match the specified regex will be subject to cleaning. The default value is <em>.content.xml</em>, which is the default name for DocView files.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td><code>excludedAbsPathRegex</code> - Regex for absolute paths to exclude. Content of all files whose absolute paths match the specified regex will be excluded from cleaning. By default, this value is not specified, which means that by default there are no files excluded from cleaning on the base of their absolute paths.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td><code>namesOfPropertiesToRemove</code> - Names of properties of JCR nodes that should be removed from the matched files. Only properties that have the names specified in this collection will be removed. By default, those names are:
+<div class="ulist">
+<ul>
+<li>
+<p><code>cq:lastReplicated</code></p>
+</li>
+<li>
+<p><code>cq:lastReplicatedBy</code></p>
+</li>
+<li>
+<p><code>cq:lastReplicationAction</code></p>
+</li>
+<li>
+<p><code>cq:lastModified</code></p>
+</li>
+<li>
+<p><code>cq:lastModifiedBy</code></p>
+</li>
+<li>
+<p><code>cq:lastPublished</code></p>
+</li>
+<li>
+<p><code>cq:lastPublishedBy</code></p>
+</li>
+<li>
+<p><code>jcr:lastModified</code></p>
+</li>
+<li>
+<p><code>jcr:lastModifiedBy</code></p>
+</li>
+<li>
+<p><code>jcr:created</code></p>
+</li>
+<li>
+<p><code>jcr:createdBy</code></p>
+</li>
+<li>
+<p><code>jcr:isCheckedOut</code></p>
+</li>
+</ul>
+</div></td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_execution"><a class="anchor" href="#_execution"></a>3.3. Execution</h3>
+<div class="olist upperalpha">
+<ol class="upperalpha" type="A">
+<li>
+<p>By default, execution of <em>JCR Cleaner</em> is bounded to the <code>generate-resources</code> phase of the default lifecycle of a Maven build. It means that by default the plugin will be executed every time when <code>mvn clean test</code>, <code>mvn clean package</code> or <code>mvn clean install</code> commands are run.</p>
+</li>
+<li>
+<p>During execution <em>JCR Cleaner</em> will analyze the relevant DocView files and perform targeted removing of redundant runtime generated properties.</p>
+</li>
+<li>
+<p>To execute <em>JCR Cleaner</em> separately from the build, run the following command:</p>
+<div class="literalblock">
+<div class="content">
+<pre>mvn jcrcleaner:clean-jcr</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can add a <code>-X</code> flag to the command above to run it in a debug mode:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>mvn jcrcleaner:clean-jcr -X</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Given an average AEM project with 2,000 DocView files, the execution of <em>JCR Cleaner</em> takes approximately 10 seconds. To minimize the build time, you can configure the plugin to be disabled by default (set &lt;isEnabled&gt; to false) and run it manually at regular intervals.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_license"><a class="anchor" href="#_license"></a>4. License</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The program is subject to MIT No Attribution License</p>
+</div>
+<div class="paragraph">
+<p>Copyright © 2023 Herman Ciechanowiec</p>
+</div>
+<div class="paragraph">
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so.</p>
+</div>
+<div class="paragraph">
+<p>The Software is provided 'as is', without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. In no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the Software or the use or other dealings in the Software.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/3.0.7/tocbot.min.js"></script>
+<script>
+    /* Tocbot dynamic TOC, works with tocbot 3.0.7 */
+    var oldtoc = document.getElementById('toctitle').nextElementSibling;
+    var newtoc = document.createElement('div');
+    newtoc.setAttribute('id', 'tocbot');
+    newtoc.setAttribute('class', 'js-toc');
+    oldtoc.parentNode.replaceChild(newtoc, oldtoc);
+    tocbot.init({ contentSelector: '#content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        smoothScroll: false,
+        collapseDepth: 3 });
+    var handleTocOnResize = function() {
+        var width = window.innerWidth
+                    || document.documentElement.clientWidth
+                    || document.body.clientWidth;
+        if (width < 768) {
+            tocbot.refresh({ contentSelector: '#content',
+                headingSelector: 'h1, h2, h3, h4',
+                collapseDepth: 6,
+                activeLinkClass: 'ignoreactive',
+                throttleTimeout: 1000,
+                smoothScroll: false });
+        }
+        else {
+            tocbot.refresh({ contentSelector: '#content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                smoothScroll: false,
+                collapseDepth: 3 });
+        }
+    };
+    window.addEventListener('resize', handleTocOnResize);
+    handleTocOnResize();
+</script>
+</body>
+</html>
