@@ -532,8 +532,7 @@
           </execution>
         </executions>
       </plugin>
-
-      <!-- Gives timestamp build propery  -->
+      <!-- Gives timestamp build property  -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
