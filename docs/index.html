@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 2.0.18">
+<meta name="generator" content="Asciidoctor 2.0.20">
 <meta name="author" content="Herman Ciechanowiec">
 <title>JCR Cleaner</title>
 <link rel="stylesheet" href="https://www.ciechanowiec.eu/linux_mantra/adoc-css-style.css">
@@ -64,7 +64,7 @@
 <h2 id="_overview"><a class="anchor" href="#_overview"></a>1. Overview</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p><em>JCR Cleaner</em> is a Maven plugin that cleans Adobe Experience Manager (AEM) projects by removing redundant runtime generated properties of Java Content Repository (JCR) nodes, such as <code>cq:lastReplicated</code>, <code>jcr:lastModified</code> and <code>jcr:created</code> (by default, 12 types of properties are removed). The plugin aims to be a part of a standard toolkit of every AEM project in order to improve code readability, as well as reduce the amount of unnecessary and environment specific data stored in the codebase.</p>
+<p><em>JCR Cleaner</em> is a Maven plugin that cleans Adobe Experience Manager (AEM) projects by removing redundant runtime generated properties of Java Content Repository (JCR) nodes, such as <code>cq:lastReplicated</code>, <code>jcr:lastModified</code> and <code>jcr:created</code> (by default, 13 types of properties are removed). The plugin aims to be a part of a standard toolkit of every AEM project in order to improve code readability, as well as reduce the amount of unnecessary and environment specific data stored in the codebase.</p>
 </div>
 </div>
 </div>
@@ -142,6 +142,9 @@
 <li>
 <p><code>jcr:isCheckedOut</code></p>
 </li>
+<li>
+<p><code>jcr:uuid</code></p>
+</li>
 </ul>
 </div>
 <div class="sect3">
@@ -150,7 +153,7 @@
 <p><strong><em>Before</em></strong></p>
 </div>
 <div class="paragraph">
-<p>Here is an example of a DocView file that has 19 redundant runtime generated properties. Note that those properties don&#8217;t have a pattern where they are located (no rule <em>one line - one property</em>) and are scattered irregularly:</p>
+<p>Here is an example of a DocView file that has 20 redundant runtime generated properties. Note that those properties don&#8217;t have a pattern where they are located (no rule <em>one line - one property</em>) and are scattered irregularly:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -173,6 +176,7 @@
           jcr:created="Thu Jun 17 2021 19:55:05 GMT+0000"
           jcr:createdBy="admin"
           jcr:isCheckedOut="{Boolean}true"
+          jcr:uuid="f5b51baa-34a2-47b7-860b-391e885a0f9f"
           sling:resourceType="cq/gui/components/authoring/dialog"&gt;
     &lt;content
             jcr:primaryType="nt:unstructured" cq:lastReplicated="{Date}2023-03-15T11:00:00.000Z"
@@ -308,7 +312,7 @@
   &lt;plugin&gt;
     &lt;groupId&gt;eu.ciechanowiec&lt;/groupId&gt;
     &lt;artifactId&gt;jcrcleaner-maven-plugin&lt;/artifactId&gt;
-    &lt;version&gt;1.0.0&lt;/version&gt;
+    &lt;version&gt;1.1.0&lt;/version&gt;
     &lt;executions&gt;
       &lt;execution&gt;
         &lt;goals&gt;
@@ -334,7 +338,7 @@
   &lt;plugin&gt;
     &lt;groupId&gt;eu.ciechanowiec&lt;/groupId&gt;
     &lt;artifactId&gt;jcrcleaner-maven-plugin&lt;/artifactId&gt;
-    &lt;version&gt;1.0.0&lt;/version&gt;
+    &lt;version&gt;1.1.0&lt;/version&gt;
     &lt;executions&gt;
       &lt;execution&gt;
         &lt;goals&gt;
@@ -411,6 +415,9 @@
 <li>
 <p><code>jcr:isCheckedOut</code></p>
 </li>
+<li>
+<p><code>jcr:uuid</code></p>
+</li>
 </ul>
 </div></td>
 </tr>
@@ -458,7 +465,7 @@
 <p>The program is subject to MIT No Attribution License</p>
 </div>
 <div class="paragraph">
-<p>Copyright © 2023 Herman Ciechanowiec</p>
+<p>Copyright © 2023-2024 Herman Ciechanowiec</p>
 </div>
 <div class="paragraph">
 <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so.</p>

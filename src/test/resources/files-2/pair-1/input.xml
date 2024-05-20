@@ -17,6 +17,7 @@
           jcr:created="Thu Jun 17 2021 19:55:05 GMT+0000"
           jcr:createdBy="admin"
           jcr:isCheckedOut="{Boolean}true"
+          jcr:uuid="f5b51baa-34a2-47b7-860b-391e885a0f9f"
           sling:resourceType="cq/gui/components/authoring/dialog">
     <content
             jcr:primaryType="nt:unstructured" cq:lastReplicated="{Date}2023-03-15T11:00:00.000Z"

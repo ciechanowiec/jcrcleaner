@@ -20,7 +20,7 @@
 
 == Overview
 
-_JCR Cleaner_ is a Maven plugin that cleans Adobe Experience Manager (AEM) projects by removing redundant runtime generated properties of Java Content Repository (JCR) nodes, such as `cq:lastReplicated`, `jcr:lastModified` and `jcr:created` (by default, 12 types of properties are removed). The plugin aims to be a part of a standard toolkit of every AEM project in order to improve code readability, as well as reduce the amount of unnecessary and environment specific data stored in the codebase.
+_JCR Cleaner_ is a Maven plugin that cleans Adobe Experience Manager (AEM) projects by removing redundant runtime generated properties of Java Content Repository (JCR) nodes, such as `cq:lastReplicated`, `jcr:lastModified` and `jcr:created` (by default, 13 types of properties are removed). The plugin aims to be a part of a standard toolkit of every AEM project in order to improve code readability, as well as reduce the amount of unnecessary and environment specific data stored in the codebase.
 
 == Plugin Purpose
 === The Problem of Redundant Properties
@@ -53,11 +53,12 @@ The presence of runtime generated properties of JCR nodes in a code repository i
 - `jcr:created`
 - `jcr:createdBy`
 - `jcr:isCheckedOut`
+- `jcr:uuid`
 
 ==== Example with Default Properties
 *_Before_*
 
-Here is an example of a DocView file that has 19 redundant runtime generated properties. Note that those properties don't have a pattern where they are located (no rule _one line - one property_) and are scattered irregularly:
+Here is an example of a DocView file that has 20 redundant runtime generated properties. Note that those properties don't have a pattern where they are located (no rule _one line - one property_) and are scattered irregularly:
 
 [source, xml]
 ----
@@ -80,6 +81,7 @@ Here is an example of a DocView file that has 19 redundant runtime generated pro
           jcr:created="Thu Jun 17 2021 19:55:05 GMT+0000"
           jcr:createdBy="admin"
           jcr:isCheckedOut="{Boolean}true"
+          jcr:uuid="f5b51baa-34a2-47b7-860b-391e885a0f9f"
           sling:resourceType="cq/gui/components/authoring/dialog">
     <content
             jcr:primaryType="nt:unstructured" cq:lastReplicated="{Date}2023-03-15T11:00:00.000Z"
@@ -191,7 +193,7 @@ _JCR Cleaner_ has a single predefined goal: `clean-jcr`. This goal should be spe
   <plugin>
     <groupId>eu.ciechanowiec</groupId>
     <artifactId>jcrcleaner-maven-plugin</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <executions>
       <execution>
         <goals>
@@ -214,7 +216,7 @@ _JCR Cleaner_ includes a default configuration that will suffice for the vast ma
   <plugin>
     <groupId>eu.ciechanowiec</groupId>
     <artifactId>jcrcleaner-maven-plugin</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <executions>
       <execution>
         <goals>
@@ -251,6 +253,7 @@ _JCR Cleaner_ includes a default configuration that will suffice for the vast ma
 - `jcr:created`
 - `jcr:createdBy`
 - `jcr:isCheckedOut`
+- `jcr:uuid`
 
 === Execution
 [upperalpha]
@@ -269,7 +272,7 @@ You can add a `-X` flag to the command above to run it in a debug mode:
 == License
 The program is subject to MIT No Attribution License
 
-Copyright © 2023 Herman Ciechanowiec
+Copyright © 2023-2024 Herman Ciechanowiec
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so.
 

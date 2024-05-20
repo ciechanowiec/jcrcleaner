@@ -34,7 +34,8 @@ class AttributeRemover {
             JcrConstants.JCR_LAST_MODIFIED_BY,                        // jcr:lastModifiedBy
             JcrConstants.JCR_CREATED,                                 // jcr:created
             JcrConstants.JCR_CREATED_BY,                              // jcr:createdBy
-            JcrConstants.JCR_ISCHECKEDOUT                             // jcr:isCheckedOut
+            JcrConstants.JCR_ISCHECKEDOUT,                            // jcr:isCheckedOut
+            JcrConstants.JCR_UUID                                     // jcr:uuid
     );
 
     private final Collection<String> namesOfAttributesToRemove;

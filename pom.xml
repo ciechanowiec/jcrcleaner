@@ -6,7 +6,7 @@
 
   <groupId>eu.ciechanowiec</groupId>
   <artifactId>jcrcleaner-maven-plugin</artifactId>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
   <packaging>maven-plugin</packaging>
 
   <name>JCR Cleaner</name>
@@ -62,45 +62,45 @@
     <max.jdk.version>11.9</max.jdk.version>
     <!--  Dependencies  -->
     <slf4j-test.version>1.2.0</slf4j-test.version>
-    <maven-plugin-api.version>3.9.4</maven-plugin-api.version>
-    <maven-plugin-annotations.version>3.9.0</maven-plugin-annotations.version>
-    <maven-core.version>3.9.4</maven-core.version>
+    <maven-plugin-api.version>3.9.6</maven-plugin-api.version>
+    <maven-plugin-annotations.version>3.13.0</maven-plugin-annotations.version>
+    <maven-core.version>3.9.6</maven-core.version>
     <commons-lang3.version>3.12.0</commons-lang3.version>
-    <uber-jar.version>6.5.17</uber-jar.version>
+    <uber-jar.version>6.5.20</uber-jar.version>
     <guava.version>14.0.1</guava.version>
-    <lombok.version>1.18.28</lombok.version>
+    <lombok.version>1.18.32</lombok.version>
     <jsr305.version>3.0.2</jsr305.version>
-    <spotbugs-annotations.version>4.7.3</spotbugs-annotations.version>
-    <junit-jupiter-api.version>5.10.0</junit-jupiter-api.version>
-    <junit-jupiter-params.version>5.10.0</junit-jupiter-params.version>
-    <mockito-core.version>5.4.0</mockito-core.version>
-    <mockito-junit-jupiter.version>5.4.0</mockito-junit-jupiter.version>
-    <slf4j-api.version>2.0.7</slf4j-api.version>
+    <spotbugs-annotations.version>4.8.5</spotbugs-annotations.version>
+    <junit-jupiter-api.version>5.10.2</junit-jupiter-api.version>
+    <junit-jupiter-params.version>5.10.2</junit-jupiter-params.version>
+    <mockito-core.version>5.12.0</mockito-core.version>
+    <mockito-junit-jupiter.version>5.12.0</mockito-junit-jupiter.version>
+    <slf4j-api.version>2.0.13</slf4j-api.version>
     <!-- Locking down Maven default plugins -->
-    <maven-clean-plugin.version>3.2.0</maven-clean-plugin.version>
-    <maven-deploy-plugin.version>3.1.1</maven-deploy-plugin.version>
-    <maven-install-plugin.version>3.1.1</maven-install-plugin.version>
-    <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
+    <maven-clean-plugin.version>3.3.2</maven-clean-plugin.version>
+    <maven-deploy-plugin.version>3.1.2</maven-deploy-plugin.version>
+    <maven-install-plugin.version>3.1.2</maven-install-plugin.version>
+    <maven-jar-plugin.version>3.4.1</maven-jar-plugin.version>
     <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
     <maven-site-plugin.version>3.12.1</maven-site-plugin.version>
-    <maven-project-info-reports-plugin.version>3.4.3</maven-project-info-reports-plugin.version>
+    <maven-project-info-reports-plugin.version>3.5.0</maven-project-info-reports-plugin.version>
     <!-- Basic plugins -->
-    <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
-    <asciidoctor-maven-plugin.version>2.2.4</asciidoctor-maven-plugin.version>
+    <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+    <asciidoctor-maven-plugin.version>3.0.0</asciidoctor-maven-plugin.version>
     <docs.destination.directory>${project.basedir}/docs</docs.destination.directory>
-    <maven-dependency-plugin.version>3.5.0</maven-dependency-plugin.version>
-    <maven-surefire-plugin.version>3.0.0</maven-surefire-plugin.version>
-    <maven-failsafe-plugin.version>3.0.0</maven-failsafe-plugin.version>
-    <maven-enforcer-plugin.version>3.3.0</maven-enforcer-plugin.version>
+    <maven-dependency-plugin.version>3.6.1</maven-dependency-plugin.version>
+    <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
+    <maven-failsafe-plugin.version>3.2.5</maven-failsafe-plugin.version>
+    <maven-enforcer-plugin.version>3.4.1</maven-enforcer-plugin.version>
     <min.maven.version>3.8.6</min.maven.version>
-    <versions-maven-plugin.version>2.15.0</versions-maven-plugin.version>
-    <jacoco-maven-plugin.version>0.8.10</jacoco-maven-plugin.version>
+    <versions-maven-plugin.version>2.16.2</versions-maven-plugin.version>
+    <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
     <jacoco-maven-plugin.coverage.minimum>0.7</jacoco-maven-plugin.coverage.minimum>
-    <spotbugs-maven-plugin.version>4.7.3.4</spotbugs-maven-plugin.version>
-    <build-helper-maven-plugin.version>3.4.0</build-helper-maven-plugin.version>
+    <spotbugs-maven-plugin.version>4.8.4.0</spotbugs-maven-plugin.version>
+    <build-helper-maven-plugin.version>3.6.0</build-helper-maven-plugin.version>
     <!-- Release plugins -->
-    <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
-    <maven-gpg-plugin.version>3.1.0</maven-gpg-plugin.version>
+    <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
+    <maven-gpg-plugin.version>3.2.4</maven-gpg-plugin.version>
     <nexus-staging-maven-plugin.version>1.6.13</nexus-staging-maven-plugin.version>
   </properties>
 

@@ -18,6 +18,7 @@
           jcr:created="Thu Jun 17 2021 19:55:05 GMT+0000"
           jcr:createdBy="admin"
           jcr:isCheckedOut="{Boolean}true"
+          jcr:uuid="f5b51baa-34a2-47b7-860b-391e885a0f9f"
           sling:resourceType="cq/gui/components/authoring/dialog">
     <content
             customos:dalida="Value for a custom property"

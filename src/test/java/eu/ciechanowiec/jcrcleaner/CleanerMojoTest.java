@@ -72,7 +72,7 @@ class CleanerMojoTest {
         int fileProviderLogEventsSize = fileProviderLogEvents.size();
         assertAll(
                 () -> assertEquals(5, cleanerMojoLogEventsSize),
-                () -> assertEquals(60, attributeRemoverLogEventsSize),
+                () -> assertEquals(63, attributeRemoverLogEventsSize),
                 () -> assertEquals(5, fileProviderLogEventsSize)
         );
     }

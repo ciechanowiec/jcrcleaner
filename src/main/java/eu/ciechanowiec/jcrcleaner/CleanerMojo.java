@@ -69,6 +69,7 @@ class CleanerMojo extends AbstractMojo {
      *   <li>{@code jcr:created}</li>
      *   <li>{@code jcr:createdBy}</li>
      *   <li>{@code jcr:isCheckedOut}</li>
+     *   <li>{@code jcr:uuid}</li>
      * </ol>
      */
     @Nullable
