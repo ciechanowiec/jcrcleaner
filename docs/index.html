@@ -39,8 +39,8 @@
 <li><a href="#_overview">1. Overview</a></li>
 <li><a href="#_plugin_purpose">2. Plugin Purpose</a>
 <ul class="sectlevel2">
-<li><a href="#_the_problem_of_redundant_properties">2.1. The Problem of Redundant Properties</a></li>
-<li><a href="#_removing_redundant_properties_by_jcr_cleaner">2.2. Removing Redundant Properties by JCR Cleaner</a>
+<li><a href="#_the_problem_of_runtime_generated_properties">2.1. The Problem of Runtime Generated Properties</a></li>
+<li><a href="#_removing_runtime_generated_properties_by_jcr_cleaner">2.2. Removing Runtime Generated Properties by JCR Cleaner</a>
 <ul class="sectlevel3">
 <li><a href="#_example_with_default_properties">2.2.1. Example with Default Properties</a></li>
 <li><a href="#_example_with_custom_properties">2.2.2. Example with Custom Properties</a></li>
@@ -64,7 +64,7 @@
 <h2 id="_overview"><a class="anchor" href="#_overview"></a>1. Overview</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p><em>JCR Cleaner</em> is a Maven plugin that cleans Adobe Experience Manager (AEM) projects by removing redundant runtime generated properties of Java Content Repository (JCR) nodes, such as <code>cq:lastReplicated</code>, <code>jcr:lastModified</code> and <code>jcr:created</code> (by default, 13 types of properties are removed). The plugin aims to be a part of a standard toolkit of every AEM project in order to improve code readability, as well as reduce the amount of unnecessary and environment specific data stored in the codebase.</p>
+<p><em>JCR Cleaner</em> is a Maven plugin that cleans Adobe Experience Manager (AEM) projects by removing runtime generated properties of Java Content Repository (JCR) nodes, such as <code>cq:lastReplicated</code>, <code>jcr:lastModified</code> and <code>jcr:created</code> (by default, 13 types of properties are removed). The plugin aims to be a part of a standard toolkit of every AEM project in order to improve code readability, as well as reduce the amount of unnecessary and environment specific data stored in the codebase.</p>
 </div>
 </div>
 </div>
@@ -72,7 +72,7 @@
 <h2 id="_plugin_purpose"><a class="anchor" href="#_plugin_purpose"></a>2. Plugin Purpose</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_the_problem_of_redundant_properties"><a class="anchor" href="#_the_problem_of_redundant_properties"></a>2.1. The Problem of Redundant Properties</h3>
+<h3 id="_the_problem_of_runtime_generated_properties"><a class="anchor" href="#_the_problem_of_runtime_generated_properties"></a>2.1. The Problem of Runtime Generated Properties</h3>
 <div class="paragraph">
 <p>Code repositories for AEM projects contain a substantial number of files in <a href="https://jackrabbit.apache.org/filevault/docview.html">FileVault Document View (DocView) format</a>, named <code>.content.xml</code> (DocView files). In a typical AEM project there can be several thousand of such files.</p>
 </div>
@@ -80,7 +80,7 @@
 <p>DocView files represent serialized JCR nodes and their properties. In many cases those files aren&#8217;t created externally, but are transferred into a code repository directly from JCR. However, JCR nodes, besides their normal properties, often have runtime generated properties, such as <code>jcr:lastModifiedBy</code> or <code>cq:lastReplicatedBy</code>. In such cases transfer of DocView files into a code repository directly from JCR results in putting to the code repository DocView files with both normal and runtime generated properties of JCR nodes.</p>
 </div>
 <div class="paragraph">
-<p>Storing runtime generated properties of JCR nodes in a code repository in DocView files is a bad practice at least due to the following reasons:</p>
+<p>Storing certain runtime generated properties of JCR nodes in a code repository in DocView files is a bad practice at least due to the following reasons:</p>
 </div>
 <div class="olist upperalpha">
 <ol class="upperalpha" type="A">
@@ -100,9 +100,9 @@
 </div>
 </div>
 <div class="sect2">
-<h3 id="_removing_redundant_properties_by_jcr_cleaner"><a class="anchor" href="#_removing_redundant_properties_by_jcr_cleaner"></a>2.2. Removing Redundant Properties by JCR Cleaner</h3>
+<h3 id="_removing_runtime_generated_properties_by_jcr_cleaner"><a class="anchor" href="#_removing_runtime_generated_properties_by_jcr_cleaner"></a>2.2. Removing Runtime Generated Properties by JCR Cleaner</h3>
 <div class="paragraph">
-<p>The presence of runtime generated properties of JCR nodes in a code repository in DocView files and consequences of that problem are resolved by <em>JCR Cleaner</em>. It achieves this by removing those properties from the relevant files. By default, the properties that have the following names are removed:</p>
+<p>The presence of unwanted runtime generated properties of JCR nodes in a code repository in DocView files and consequences of that problem are resolved by <em>JCR Cleaner</em>. It achieves this by removing those properties from the relevant files. By default, the properties that have the following names are removed:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -153,7 +153,7 @@
 <p><strong><em>Before</em></strong></p>
 </div>
 <div class="paragraph">
-<p>Here is an example of a DocView file that has 20 redundant runtime generated properties. Note that those properties don&#8217;t have a pattern where they are located (no rule <em>one line - one property</em>) and are scattered irregularly:</p>
+<p>Here is an example of a DocView file that has 20 runtime generated properties. Note that those properties don&#8217;t have a pattern where they are located (no rule <em>one line - one property</em>) and are scattered irregularly:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -208,7 +208,7 @@
 <p><strong><em>After</em></strong></p>
 </div>
 <div class="paragraph">
-<p>Following the cleanup by <em>JCR Cleaner</em>, all the redundant runtime generated properties from the above file will be removed. Besides that, the content of the file wil be prettified in places where the removed properties were located so that the final result will look the following way:</p>
+<p>Following the cleanup by <em>JCR Cleaner</em>, all the runtime generated properties from the above file will be removed. Besides that, the content of the file wil be prettified in places where the removed properties were located so that the final result will look the following way:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -249,7 +249,7 @@
 <div class="sect3">
 <h4 id="_example_with_custom_properties"><a class="anchor" href="#_example_with_custom_properties"></a>2.2.2. Example with Custom Properties</h4>
 <div class="paragraph">
-<p>It was explained above that <em>JCR Cleaner</em> has a set of default names of redundant runtime generated properties that are removed by default. However - as it will be elaborated in the next section - that default set can be customized. For instance, the file below contains 2 redundant runtime generated properties: <code>jcr:createdBy</code> and <code>jcr:isCheckedOut</code>. Nevertheless, if <em>JCR Cleaner</em> is configured in such way that only <code>jcr:createdBy</code> property should be removed, it will be the only deleted property in this file:</p>
+<p>It was explained above that <em>JCR Cleaner</em> has a set of default names of runtime generated properties that are removed by default. However - as it will be elaborated in the next section - that default set can be customized. For instance, the file below contains 2 runtime generated properties: <code>jcr:createdBy</code> and <code>jcr:isCheckedOut</code>. Nevertheless, if <em>JCR Cleaner</em> is configured in such way that only <code>jcr:createdBy</code> property should be removed, it will be the only deleted property in this file:</p>
 </div>
 <div class="listingblock">
 <div class="title">Before:</div>
@@ -432,14 +432,12 @@
 <p>By default, execution of <em>JCR Cleaner</em> is bounded to the <code>generate-resources</code> phase of the default lifecycle of a Maven build. It means that by default the plugin will be executed every time when <code>mvn clean test</code>, <code>mvn clean package</code> or <code>mvn clean install</code> commands are run.</p>
 </li>
 <li>
-<p>During execution <em>JCR Cleaner</em> will analyze the relevant DocView files and perform targeted removing of redundant runtime generated properties.</p>
+<p>During execution <em>JCR Cleaner</em> will analyze the relevant DocView files and perform targeted removing of runtime generated properties.</p>
 </li>
 <li>
 <p>To execute <em>JCR Cleaner</em> separately from the build, run the following command:</p>
-<div class="literalblock">
-<div class="content">
-<pre>mvn jcrcleaner:clean-jcr</pre>
-</div>
+<div class="paragraph">
+<p>mvn jcrcleaner:clean-jcr</p>
 </div>
 <div class="paragraph">
 <p>You can add a <code>-X</code> flag to the command above to run it in a debug mode:</p>
